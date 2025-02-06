@@ -13,23 +13,23 @@ mongoose.connect('mongodb://127.0.0.1:27017/Company')
 .catch(err => console.log(err))
 
 //Register API Route
-app.post('/addProduct',(req,res)=>{
-    ProductModel.create(req.body)
+app.post('/addProduct', async (req,res)=>{
+   await ProductModel.create(req.body)
     .then(res.json('Data Saved Successfully'))
     .catch(err=>res.json(err))
 })
 
 //Read - REST API Route
-app.get('/viewProducts', (req,res)=>{
-    ProductModel.find()
+app.get('/viewProducts', async (req,res)=>{
+    await ProductModel.find()
     .then(result=>res.json(result))
     .catch(err=>res.json(err))
 })
 
 //Get By ID 
-app.get('/findProduct/:id', (req,res)=>{
+app.get('/findProduct/:id', async (req,res)=>{
     console.log('Find Product:', req.params.id)
-    ProductModel.findById(req.params.id)
+    await ProductModel.findById(req.params.id)
     .then(result=>res.json(result))
     .catch(err=>res.json(err))
 })
@@ -42,16 +42,15 @@ app.delete('/deleteProduct/:id',async (req,res)=>{
     .catch(err=>res.json(err))
 })
 //Update - REST API Route
-app.put('/editProduct/:id', (req,res)=>{
+app.put('/editProduct/:id', async (req,res)=>  {
     const id = req.params.id
-    const { name, email,phone,location } = req.body
-    console.log(id + ',' + name +','+ email+','+phone+','+location)   
+    console.log(id + ',' + req.body.name)   
     try {
-        const updatedUser = UserModel.findByIdAndUpdate(id,req.body)
-        if (!updatedUser) {
-            return res.status(404).send('User not found');
+        const updatedProduct = await ProductModel.findByIdAndUpdate(id,req.body,{new:true})
+        if (!updatedProduct) {
+            return res.status(404).send('Item not found');
         }
-        res.json('updated'+ updatedUser);
+        res.json('Product Updated Successfully');
     } catch (err) {
         console.error(err);
         res.status(500).send('Server error');

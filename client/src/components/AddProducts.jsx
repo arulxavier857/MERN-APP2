@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import axios from "axios"
 import { Link } from 'react-router-dom';
+import { ToastContainer, toast,Bounce } from "react-toastify";
 
 function AddProducts(props) {
   const [name,setName] = useState("")
   const [quantity,setQuantity] = useState("")
   const [price, setPrice] = useState("")
-  const [status,setStatus] = useState("")
   const [Errors, setErrors] = useState({
     name: '',
     quantity:'',
@@ -14,7 +14,7 @@ function AddProducts(props) {
   });
 
   const errors = {}  
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault() 
        
     //Input Validation
@@ -31,19 +31,22 @@ function AddProducts(props) {
       setErrors(errors);
       return;
     }
-    axios.post('http://localhost:8000/addProduct',
-              {name,quantity,price})
-          .then(result=>setStatus(result.data))
-          .catch(err=>setStatus(err))
+    try{
+      const response = await axios.post('http://localhost:8000/addProduct',{name,quantity,price})
+      // setStatus(response.data)
+      toast.success(response.data)
+    }
+    catch(error){
+      console.log(error)
+    }
   }
   return (
     <> 
-      <Link to="/" className='text-indigo-500 font-bold decoration-none hover:font-bold mt-4 ml-6'>Back to Stock </Link>
+
       <div className="w-full max-w-lg mx-auto mt-5 mb-5">
-      <h3 className="font-bold text-blue text-center text-xl">Add New Product Details</h3> 
-      
+      <h3 className="font-bold text-blue text-center text-xl mb-4">Add New Product Details</h3> 
+      <Link to="/" className='text-indigo-500 text-xl font-bold decoration-none hover:font-bold mt-4 ml-6'><i className="fa fa-arrow-left mr-2" aria-hidden="true"></i>Back</Link>
       <form onSubmit={handleSubmit} className="bg-white shadow-md rounded px-8 pt-6 pb-8 mt-4 mb-4 border border-gray-300 w-100">
-        
         <div className="mb-4">
           <label className="block text-gray-700 text-start text-sm font-bold mb-2" htmlFor="name">
             Product Name
@@ -77,7 +80,8 @@ function AddProducts(props) {
           </button>
         </div>
         <div className="text-green-700 font-bold mt-4 text-center text-sm"> 
-          {status} 
+          {/* {status}  */}
+          <ToastContainer position="top-left" autoClose={2000} hideProgressBar={false} closeOnClick={true} transition={Bounce} theme="dark"/>
         </div>
       </form>
      </div>
