@@ -1,127 +1,101 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios"
+import { Link } from 'react-router-dom';
+import { useParams } from "react-router-dom";
 
+function EditProduct(props) {
 
-function EditUser(props) {
+  const { id } = useParams();
+  console.log(id)
 
-   
-   
-  const [name,setName] = useState("")
-  const [email,setEmail] = useState("")
-  const [phone, setPhone] = useState("")
-  const [location,setLocation] = useState("")
+  const [selectedProduct, setSelectedProduct] = useState([])
+  useEffect(()=>{
+    axios.get(`http://localhost:8000/findProduct/${id}`)
+          .then(result=>setSelectedProduct(result.data))
+          .catch(err=>console.log(err))
+  },[id])
+
+  const [name,setName] = useState(selectedProduct.name)
+  const [quantity,setQuantity] = useState("")
+  const [price, setPrice] = useState("")
   const [status,setStatus] = useState("")
   const [Errors, setErrors] = useState({
     name: '',
-    email: '',
-    emailformat:'',
-    phone:'',
-    phoneformat:'',
-    location:''
+    quantity:'',
+    price:''
   });
-
-  const [userData,setUserData] = useState(null)
-
- const getUser = (id)=>{
-    axios.get(`http://localhost:8000/user/${id}`)
-          .then(result=> {
-               setUserData(result.data)
-               //console.log(userData)
-          } )
-          .catch(err=>console.log(err))
-  }
-  useEffect(() => {
-    if (props.userid) {
-      getUser(props.userid);
-    }
-  }, [props.userid]);
-   
-
-  const errors = {}
-  const validateEmail = (email) => {
-        const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-        return emailRegex.test(email);
-    };
+ 
+  const errors = {}  
   const handleSubmit = (e) => {
     e.preventDefault() 
        
     //Input Validation
     if(name.length==""){
-      errors.name = "Name is required!"
+      errors.name = "Product name is required!"
     }
-    if(email.length==0){
-      errors.email = "Email is required!"
-    }else if(!validateEmail){
-      errors.emailformat = "Email ID format wrong!"
+    if(quantity.length==0){
+      errors.email = "Quantity is required!"
     }
-    if(phone.length==0){
-      errors.phone = "Phone number is required!"
-    }else if(phone.length!=10){
-      errors.phonelength = "Invalid Phone Number"
+    if(price.length==0){
+      errors.phone = "Price is required!"
     }
-    if(location.length==0){
-      errors.location = "Location is required!"
-    }
-   
-    console.log(Errors)
     if (Object.keys(errors).length > 0) {
       setErrors(errors);
       return;
     }
-    // if(Object.keys(errors).length == 0) {
-          axios.post('http://localhost:8000/register',
-              {name,email,phone,location})
-          .then(result=>setStatus(result.data))
-          .catch(err=>setStatus(err))
-          props.users()
-    // }
+    // axios.put('http://localhost:8000/editProduct',
+    //           {name,quantity,price})
+    //       .then(result=>setStatus(result.data))
+    //       .catch(err=>setStatus(err))
   }
   return (
-    <div className="w-full max-w-lg mx-auto mt-5">
-      <form onSubmit={handleSubmit} className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 border w-100">
-        {/* <h3 className="font-bold text-blue">Registration Form</h3> */}
+    <> 
+      <Link to="/" className='text-indigo-500 font-bold decoration-none hover:font-bold mt-4 ml-6'>Back to Stock </Link>
+      <div className="w-full max-w-lg mx-auto mt-5 mb-5">
+      <h3 className="font-bold text-blue text-center text-xl">Add New Product Details</h3> 
+      
+      <form onSubmit={handleSubmit} className="bg-white shadow-md rounded px-8 pt-6 pb-8 mt-4 mb-4 border border-gray-300 w-100">
+        
         <div className="mb-4">
           <label className="block text-gray-700 text-start text-sm font-bold mb-2" htmlFor="name">
-            Name
+            Product Name
           </label>
-          <input onChange={(e)=>setName(e.target.value)}
-           className="shadow border rounded w-full py-2 px-3 text-gray-700" id="name" 
-           type="text" placeholder="Name">
+          <input type='text' value={name} placeholder="Enter Product Name" onChange={(e)=>setName(e.target.value)}
+           className="shadow border border-gray-400 rounded w-full py-2 px-3 text-gray-700" id="name" 
+          >
            </input>
            {Errors.name && <span style={{color: 'red'}}>{Errors.name}</span>}
         </div>
         <div className="mb-4">
           <label className="block text-gray-700 text-start text-sm font-bold mb-2" htmlFor="email">
-          Email
+          Quantity
           </label>
-          <input onChange={(e)=>setEmail(e.target.value)} className="shadow border rounded w-full py-2 px-3 text-gray-700" id="email" type="email" placeholder="Email ID"></input>
-          {Errors.email && <span style={{ color: 'red' }}>{Errors.email}</span>}
+          <input type="number" placeholder="No of Units"  value={selectedProduct.quantity} onChange={(e)=>setQuantity(e.target.value)} 
+              className="shadow border border-gray-400 rounded w-full py-2 px-3 text-gray-700" ></input>
+          {Errors.quantity && <span style={{ color: 'red' }}>{Errors.quantity}</span>}
         </div>
         <div className="mb-4">
           <label className="block text-gray-700 text-start text-sm font-bold mb-2" htmlFor="phone">
-            Phone
+            Price
           </label>
-          <input onChange={(e)=>setPhone(e.target.value)} className="shadow  border rounded w-full py-2 px-3 text-gray-700" id="phone" type="text" placeholder="Phone Number"></input>
-          {Errors.phone && <span style={{ color: 'red' }}>{Errors.phone}</span>}
-        </div>
-        <div className="mb-6">
-          <label className="block text-gray-700 text-start text-sm font-bold mb-2" htmlFor="location">
-            Location
-          </label>
-          <input onChange={(e)=>setLocation(e.target.value)} className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700" id="location" type="text" placeholder="Location"></input>
-          {Errors.location && <p style={{ color: 'red' }}>{Errors.location}</p>}
+          <input type='number' value={selectedProduct.price} placeholder="Unit price" onChange={(e)=>setPrice(e.target.value)} 
+          className="shadow  border border-gray-400 rounded w-full py-2 px-3 text-gray-700"
+          id="phone"></input>
+          {Errors.price && <span style={{ color: 'red' }}>{Errors.price}</span>}
         </div>
         <div className="flex justify-center">
           <button className="bg-blue-500 hover:bg-blue-900 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
-            Update
+            Update Product
           </button>
         </div>
-        <div className="text-green-700 mt-2"> 
+        <div className="text-green-700 font-bold mt-4 text-center text-sm"> 
           {status} 
         </div>
       </form>
-  </div>
+     </div>
+    </>
+  
   );
 }
 
-export default EditUser
+export default EditProduct

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import axios from "axios"
 import { Link } from 'react-router-dom';
 
-function RegisterForm(props) {
+function AddProducts(props) {
   const [name,setName] = useState("")
   const [quantity,setQuantity] = useState("")
   const [price, setPrice] = useState("")
@@ -86,4 +86,4 @@ function RegisterForm(props) {
   );
 }
 
-export default RegisterForm
+export default AddProducts

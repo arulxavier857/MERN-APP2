@@ -27,21 +27,22 @@ app.get('/viewProducts', (req,res)=>{
 })
 
 //Get By ID 
-app.get('/user/:id', (req,res)=>{
-    UserModel.findById(req.params.id)
+app.get('/findProduct/:id', (req,res)=>{
+    console.log('Find Product:', req.params.id)
+    ProductModel.findById(req.params.id)
     .then(result=>res.json(result))
     .catch(err=>res.json(err))
 })
 
 //Delete - REST API Route
-app.delete('/deleteProduct/:id', (req,res)=>{
+app.delete('/deleteProduct/:id',async (req,res)=>{
     console.log(req.params.id)
-    ProductModel.deleteOne({_id:req.params.id})
-    .then(result=>res.json(result))
+    const deletedItem = await ProductModel.findByIdAndDelete({_id:req.params.id})
+    .then(result=>res.json('Item Deleted Successfully!'))
     .catch(err=>res.json(err))
 })
 //Update - REST API Route
-app.put('/update/:id', (req,res)=>{
+app.put('/editProduct/:id', (req,res)=>{
     const id = req.params.id
     const { name, email,phone,location } = req.body
     console.log(id + ',' + name +','+ email+','+phone+','+location)   

@@ -20,11 +20,11 @@ function Home(){
   },[]) 
 
   const handleDelete = (id)=>{
-   console.log(id)
+   console.log('handleDelete:',id)
     axios.delete(`http://localhost:8000/deleteProduct/${id}`)
      .then(result=>{
-       console.log('deleted')
-       //viewProducts()
+       console.log(result.data)
+       viewProducts()
      })
      .catch(err=>console.log(err))
    }
@@ -49,18 +49,18 @@ function Home(){
         <tbody>
               {products.map((item,index)=>{
                   return(
-                    <tr  className="border">
+                    <tr  className="border" key={index} >
                             <td className="border py-1 px-4 text-sm text-gray-800">{index+1}</td>
                             <td className="border py-1 px-4 text-sm text-gray-800">{item.name}</td>
                             <td className="border py-1 px-4 text-sm text-gray-800">{item.quantity}</td>
                             <td className="border py-1 px-4 text-sm text-gray-800">{item.price}</td>
                             <td className="border py-1 px-4 text-sm text-gray-800">
-                            <Link to='/editproduct' className="text-indigo-600 hover:text-indigo-800 mr-4">
-                            <i className="fas fa-edit text-lg"></i>
+                            <Link to={`/editproduct/${item._id}`} className="text-indigo-600 hover:text-indigo-800 mr-4">
+                                <i className="fas fa-edit text-lg"></i>
                             </Link>
-                            <button onClick={handleDelete(item.id)} className="text-red-600 bg-white hover:text-red-800">
+                             <button onClick={() => handleDelete(item._id)} className="text-red-600 bg-white hover:text-red-800">
                                 <i className="fas fa-trash text-lg"></i>
-                            </button>
+                            </button> 
                             </td>
                     </tr>
                   )
